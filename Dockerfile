@@ -18,19 +18,21 @@ COPY ./requirements/requirements.txt /tmp/requirements.txt
 
 RUN pip install --no-cache-dir --no-deps -v -r /tmp/requirements.txt
 
-RUN groupadd --gid 30000 app_grp \
-    && useradd --uid 30001 --gid app_grp --shell /bin/bash -c 'app user' -m app_usr \
-    && chown -R app_usr:app_grp /app
+# TODO: use spearate user instead of root. Mounting the dirs were overriding the user permission.
+# RUN groupadd --gid 30000 app_grp \
+#    && useradd --uid 30001 --gid app_grp --shell /bin/bash -c 'app user' -m app_usr \
+#    && chown -R app_usr:app_grp /app
 
-COPY --chown=app_usr:app_grp . .
+#COPY --chown=app_usr:app_grp . .
+COPY . .
 
-RUN chmod +x entrypoint.sh \
-    && mkdir -p /app/static_root \
-    && chown -R app_usr:app_grp /app/static_root
+RUN chmod +x entrypoint.sh
+#    && mkdir -p /app/static_root \
+#    && chown -R app_usr:app_grp /app/static_root
 
 EXPOSE 8000
 
-USER app_usr
+#USER app_usr
 
 ENTRYPOINT ["sh", "/app/entrypoint.sh"]
 CMD ["sh", "-c", "gunicorn --bind :8000 --workers ${GUNICORN_WORKERS} --limit-request-line=5000 --timeout 120 --preload --error-logfile ./logs/gunicorn-error.log LunchLog.wsgi"]

@@ -46,9 +46,12 @@ services:
     container_name: nginx
     restart: unless-stopped
     ports:
-      - "8000:8000"
+      - "7000:80"
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      # TODO: improve the symlink
+      - ./nginx/sites-available/default-ssl:/etc/nginx/conf.d/default.conf
+      - ./nginx/sites-available/default-ssl:/etc/nginx/sites-enabled/default-ssl:ro
+      - ./nginx/snippets:/etc/nginx/snippets:ro
       - ./static_root:/app/static_root:ro
     depends_on:
       - lunchlog
