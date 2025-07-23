@@ -4,12 +4,6 @@
 #
 #    pip-compile --output-file=requirements/requirements.txt requirements/requirements.in
 #
---index-url https://darshan.gaikwad@partner.cgm.com:cmVmdGtuOjAxOjE3ODI5ODEyODY6cXRIQndUS0hncWhDMmc2UVBxbWh2T2pGQUQ5@jfrog.cgm.ag/artifactory/api/pypi/cgm-ghg-de.praxisdienst.pypi.virtual/simple
---trusted-host artifactory.cgm.ag
---trusted-host artifactory.cgm.com
---trusted-host pypi.org
---trusted-host files.pythonhosted.org
---trusted-host pypi.python.org
 
 asgiref==3.9.1
     # via django
