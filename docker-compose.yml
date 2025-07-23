@@ -1,0 +1,64 @@
+services:
+  postgres_db:
+    container_name: postgres_db
+    image: postgres:15
+    restart: always
+    environment:
+      - POSTGRES_DB=lunchlog_db
+      - POSTGRES_USER=lunchlog_user
+      - POSTGRES_PASSWORD=lunchlog_user_pass
+      - TZ="Europe/Berlin"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend
+      - default
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U lunchlog_user -d lunchlog_db -p 5432" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  lunchlog:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      GUNICORN_WORKERS: 3
+      STATIC_ROOT: /app/static_root/static
+    volumes:
+      - ./logs:/app/logs
+      - ./static_root:/app/static_root
+      - ./env:/app/env
+    networks:
+      - backend
+      - default
+    depends_on:
+      - postgres_db
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./static_root:/app/static_root:ro
+    depends_on:
+      - lunchlog
+    networks:
+      - backend
+      - default
+
+volumes:
+  postgres_data:
+  static_volume:
+
+networks:
+  backend:
