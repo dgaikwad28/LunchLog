@@ -1,6 +1,11 @@
+# TODO: Update this file with the latest compatable versions of the packages.
 django==5.2.4
-djangorestframework-simplejwt[crypto]==5.3.1
-djangorestframework==3.15.2
-psycopg[binary]==3.2.3
+djangorestframework-simplejwt[crypto]
+dj-rest-auth[with_social]
+djangorestframework
+psycopg[binary]
 django-environ
 gunicorn==23.0.0
+django-allauth
+django-storages[s3]
+pillow

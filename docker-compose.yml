@@ -25,9 +25,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    container_name: lunchlog
     restart: unless-stopped
-    ports:
-      - "8000:8000"
     environment:
       GUNICORN_WORKERS: 3
       STATIC_ROOT: /app/static_root/static
@@ -55,6 +54,8 @@ services:
       - ./static_root:/app/static_root:ro
     depends_on:
       - lunchlog
+    expose:
+      - 7000
     networks:
       - backend
       - default
