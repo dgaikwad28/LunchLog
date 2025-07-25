@@ -3,6 +3,7 @@ from typing import Dict, Any
 from allauth.account import app_settings as allauth_account_settings
 from allauth.account.adapter import get_adapter
 from allauth.socialaccount.models import EmailAddress
+from botocore.exceptions import SSLError
 from dj_rest_auth.registration.serializers import RegisterSerializer
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -17,12 +18,19 @@ UserModel = get_user_model()
 
 
 class UserSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the user model, exposing primary key, username, email, first name, and last name.
+    """
+
     class Meta:
         model = UserModel
         fields = ('pk', 'username', 'email', 'first_name', 'last_name')
 
 
 class LoginSerializer(TokenObtainPairSerializer):
+    """
+    Serializer for user login, returns JWT tokens and serialized user data.
+    """
 
     def validate(self, attrs: Dict[str, Any]) -> Dict[str, str]:
         data = super().validate(attrs)
@@ -31,11 +39,18 @@ class LoginSerializer(TokenObtainPairSerializer):
 
 
 class SignUpSerializer(RegisterSerializer):
+    """
+    Serializer for user registration. Handles first name, last name, and email validation.
+    """
     _has_phone_field = None
     first_name = serializers.CharField()
     last_name = serializers.CharField()
 
     def get_cleaned_data(self):
+        """
+        Returns a dictionary of cleaned user registration data including username, password, email, first name,
+        and last name.
+        """
         return {
             'username': self.validated_data.get('username', ''),
             'password1': self.validated_data.get('password1', ''),
@@ -45,36 +60,68 @@ class SignUpSerializer(RegisterSerializer):
         }
 
     def validate_email(self, email):
+        """
+        Validates the email address for uniqueness and proper formatting.
+        Raises a ValidationError if the email is already registered.
+        """
         email = get_adapter().clean_email(email)
         if allauth_account_settings.UNIQUE_EMAIL:
             if email and EmailAddress.objects.filter(email=email).exists():
-                raise serializers.ValidationError(
-                    _('A user is already registered with this e-mail address.'),
-                )
+                raise serializers.ValidationError('A user is already registered with this e-mail address.')
         return email
 
 
-class ReceiptsSerializer(serializers.ModelSerializer):
+class ReceiptsCreateSerializer(serializers.ModelSerializer):
+    """
+    Serializer for creating Receipt instances. Uses all fields from the Receipt model.
+    """
+
+    class Meta:
+        model = Receipt
+        fields = '__all__'
+
+
+class ReceiptsSerializer(ReceiptsCreateSerializer):
+    """
+    Serializer for displaying Receipt instances, including nested user data.
+    """
+    user = UserSerializer(read_only=True)
+
     class Meta:
         model = Receipt
         fields = '__all__'
 
 
 class ReceiptImageUploadSerializer(serializers.ModelSerializer):
-    image = serializers.ImageField(required=True, allow_empty_file=False, allow_null=False)
+    """
+    Serializer for uploading and validating receipt images. Ensures image size and handles S3 upload errors.
+    """
+    image = serializers.ImageField(required=True, allow_empty_file=False, allow_null=False, )
 
     class Meta:
         model = Receipt
         fields = ('image',)
         read_only_fields = ('id',)
 
-    def validate_image(self, image):
+    def validate_image(self, image) -> serializers.ImageField:
+
+        """
+        Validates the uploaded image for size constraints.
+        """
         if image.size > settings.MEDIA_SIZE:
             raise ValidationError(f'Image file too large')
+        return image
 
     def update(self, instance, validated_data):
+        """
+        Updates the Receipt instance with a new image, renames the image, and handles S3 upload errors.
+        """
         if validated_data.get('image'):
             image = validated_data['image']
-            image.name = f"{instance.id}_{image.name}"
+            image.name = f"{str(instance.user.pk)}_{instance.date}"
             instance.image = image
-        return super().update(instance, validated_data)
+            try:
+                return super().update(instance, validated_data)
+            except SSLError:
+                pass
+        raise ValidationError("There was an error uploading the image. Please try again.")

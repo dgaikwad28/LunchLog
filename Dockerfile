@@ -35,4 +35,4 @@ EXPOSE 8000
 #USER app_usr
 
 ENTRYPOINT ["sh", "/app/entrypoint.sh"]
-CMD ["sh", "-c", "gunicorn --bind :8000 --workers ${GUNICORN_WORKERS} --limit-request-line=5000 --timeout 120 --preload --error-logfile ./logs/gunicorn-error.log LunchLog.wsgi"]
+CMD ["sh", "-c", "gunicorn --bind :8000 --workers ${GUNICORN_WORKERS} --limit-request-line=5000 --timeout 120 --preload --error-logfile ./logs/gunicorn-error.log lunchlog.wsgi"]
