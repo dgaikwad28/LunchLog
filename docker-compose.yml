@@ -60,6 +60,28 @@ services:
       - backend
       - default
 
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - backend
+      - default
+
+  celery_worker:
+    build: .
+    command: celery -A lunchlog worker --loglevel=INFO --logfile=/app/logs/celery.log
+    volumes:
+      - .:/app
+    depends_on:
+      - lunchlog
+      - redis
+    networks:
+      - backend
+      - default
+
 volumes:
   postgres_data:
   static_volume:

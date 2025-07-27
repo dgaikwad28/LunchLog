@@ -85,7 +85,7 @@ class ReceiptsViewSet(viewsets.ModelViewSet):
         self.perform_create(serializer)
         receipt_obj = serializer.instance
 
-        fetch_restaurant_details.delay(receipt_obj, restaurant_dict)
+        fetch_restaurant_details.delay(str(receipt_obj.id), restaurant_dict)
 
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)

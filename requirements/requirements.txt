@@ -4,7 +4,6 @@
 #
 #    pip-compile --output-file=requirements/requirements.txt requirements/requirements.in
 #
-
 amqp==5.3.1
     # via kombu
 asgiref==3.9.1
@@ -104,6 +103,8 @@ python-dateutil==2.9.0.post0
     # via
     #   botocore
     #   celery
+redis==6.2.0
+    # via -r requirements/requirements.in
 requests==2.32.4
     # via django-allauth
 s3transfer==0.13.1

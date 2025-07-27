@@ -1,12 +1,13 @@
 # TODO: Update this file with the latest compatable versions of the packages.
-django==5.2.4
-djangorestframework-simplejwt[crypto]
-dj-rest-auth[with_social]
-djangorestframework
-psycopg[binary]
-django-environ
-gunicorn==23.0.0
-django-allauth
-django-storages[s3]
-pillow
 celery
+dj-rest-auth[with_social]
+django-allauth
+django-environ
+django-storages[s3]
+django==5.2.4
+djangorestframework
+djangorestframework-simplejwt[crypto]
+gunicorn==23.0.0
+pillow
+psycopg[binary]
+redis
