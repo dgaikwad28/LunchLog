@@ -226,7 +226,7 @@ class ReceiptsViewSetTestCase(TestCase, InitModelsUtil):
                     "city": "random_city",
                     "state": "random_state",
                     "postal_code": "random_postal_code",
-                    "country": "random_country",
+                    "region_code": "random_region_code",
                     "phone_number": "random_phone_number"
                 }
             }

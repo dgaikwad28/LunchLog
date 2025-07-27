@@ -8,6 +8,7 @@ User = get_user_model()
 
 class InitModelsUtil:
     def __init__(self):
+        self.address_list_keys = None
         self.address_obj = None
         self.restaurant_obj = None
         self.receipt_list_keys = None
@@ -32,10 +33,9 @@ class InitModelsUtil:
 
     def init_model_receipt_data(self):
         self.address_obj = Address.objects.create(street='123 Main St',
-                                                  city='Cityville',
-                                                  state='State',
+                                                  locality='Cityville',
                                                   postal_code='12345',
-                                                  country='Country',
+                                                  region_code='Country',
                                                   phone_number='1234567890')
         self.restaurant_obj = Restaurant.objects.create(name='restaurant_name',
                                                         food_type='food_type',
@@ -57,5 +57,5 @@ class InitModelsUtil:
 
         self.receipt_list_keys = ['id', 'restaurant', 'user', 'price', 'currency', 'date', 'image', 'created',
                                   'updated']
-        self.address_list_keys = ['id', 'street', 'city', 'state', 'postal_code', 'country', 'phone_number', 'created',
+        self.address_list_keys = ['id', 'street', 'locality', 'postal_code', 'region_code', 'phone_number', 'created',
                                   'updated']

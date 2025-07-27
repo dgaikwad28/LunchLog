@@ -7,6 +7,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from . import serializers
 from .models import Receipt
+from .tasks import fetch_restaurant_details
 
 UserModel = get_user_model()
 
@@ -47,7 +48,8 @@ class ReceiptsViewSet(viewsets.ModelViewSet):
             - year: Filter receipts by year of the date field.
         """
         user = self.request.user
-        queryset = Receipt.objects.filter(user=user).prefetch_related('user', 'restaurant').select_related('restaurant__address')
+        queryset = Receipt.objects.filter(user=user).prefetch_related('user', 'restaurant').select_related(
+            'restaurant__address')
         filters = self.get_query_params()
         if filters:
             queryset = queryset.filter(**filters)
@@ -72,3 +74,18 @@ class ReceiptsViewSet(viewsets.ModelViewSet):
         instance.image.delete()
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def create(self, request, *args, **kwargs):
+        """
+        Creates a new Receipt and triggers a background task to fetch restaurant details from Google Places API.
+        """
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        restaurant_dict = serializer.validated_data.pop('restaurant')
+        self.perform_create(serializer)
+        receipt_obj = serializer.instance
+
+        fetch_restaurant_details.delay(receipt_obj, restaurant_dict)
+
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)

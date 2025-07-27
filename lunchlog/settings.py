@@ -181,6 +181,7 @@ REST_AUTH = {
     'USE_JWT': True
 }
 
+GOOGLE_API_KEY = env.str('GOOGLE_API_KEY')
 # AWS S3 settings
 AWS_ACCESS_KEY_ID = env.str('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = env.str('AWS_SECRET_ACCESS_KEY')
@@ -188,7 +189,7 @@ AWS_STORAGE_BUCKET_NAME = env.str('AWS_STORAGE_BUCKET_NAME')
 AWS_S3_REGION_NAME = env.str('AWS_S3_REGION_NAME', 'eu-north-1')
 AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
 
-GZIP_CONTENT_TYPES= ('image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml')
+GZIP_CONTENT_TYPES = ('image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml')
 MEDIA_SIZE = env.int('MEDIA_SIZE', 12 * 1024 * 1024)  # Default to 12MB
 
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'

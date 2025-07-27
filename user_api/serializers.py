@@ -73,14 +73,14 @@ class SignUpSerializer(RegisterSerializer):
 class AddressSerializer(serializers.ModelSerializer):
     class Meta:
         model = Address
-        fields = ('__all__')
+        fields = '__all__'
 
 
 class RestaurantSerializer(serializers.ModelSerializer):
     """
     Serializer for the Restaurant model, exposing primary key and name.
     """
-    address = AddressSerializer()
+    address = AddressSerializer(required=True)
 
     class Meta:
         model = Restaurant
@@ -92,24 +92,11 @@ class ReceiptsCreateSerializer(serializers.ModelSerializer):
     Serializer for creating Receipt instances. Uses all fields from the Receipt model.
     """
 
-    restaurant = RestaurantSerializer()
+    restaurant = RestaurantSerializer(required=False, write_only=True)
 
     class Meta:
         model = Receipt
         fields = '__all__'
-
-    def create(self, validated_data):
-        """
-        Creates a Receipt instance with nested Restaurant and Address data.
-        """
-        restaurant_data = validated_data.pop('restaurant')
-        address_data = restaurant_data.pop('address')
-
-        address = Address.objects.create(**address_data)
-        restaurant = Restaurant.objects.create(address=address, **restaurant_data)
-
-        receipt = Receipt.objects.create(restaurant=restaurant, **validated_data)
-        return receipt
 
 
 class ReceiptsSerializer(ReceiptsCreateSerializer):
@@ -117,6 +104,7 @@ class ReceiptsSerializer(ReceiptsCreateSerializer):
     Serializer for displaying Receipt instances, including nested user data.
     """
     user = UserSerializer(read_only=True)
+    restaurant = RestaurantSerializer(read_only=True)
 
     class Meta:
         model = Receipt

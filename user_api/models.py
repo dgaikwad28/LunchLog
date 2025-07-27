@@ -33,29 +33,30 @@ class Receipt(models.Model):
 
 class Address(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    google_place_id = models.CharField(max_length=255, unique=True, blank=True, null=True)
 
     street = models.CharField(max_length=255)
-    city = models.CharField(max_length=100)
-    state = models.CharField(max_length=100, blank=True, null=True)
+    locality = models.CharField(max_length=100, blank=True, null=True)
     postal_code = models.CharField(max_length=20, blank=True, null=True)
-    country = models.CharField(max_length=100)
+    region_code = models.CharField(max_length=100)
     phone_number = models.CharField(max_length=20, blank=True, null=True)
 
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f'{self.postal_code}, {self.country}'
+        return f'{self.postal_code}, {self.region_code}'
 
 
 class Restaurant(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
     name = models.CharField(max_length=255)
-    food_type = models.CharField(max_length=100, blank=True, null=True)
+    food_type = models.JSONField(blank=True, null=True, default=list)
     address = models.OneToOneField('Address', on_delete=models.CASCADE, related_name='restaurant')
 
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.name
+        return f'{self.name}, {self.address}'

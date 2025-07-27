@@ -30,6 +30,7 @@ class UserAdminExtend(UserAdmin):
 class ReceiptAdmin(admin.ModelAdmin):
     list_display = ("id", "username", "email", "price", "created", "updated")
     search_fields = ("id", "user__usernameusername", "user__email")
+    list_filter = (("restaurant", admin.EmptyFieldListFilter),)
 
     @staticmethod
     def username(obj: Receipt) -> str:
@@ -38,6 +39,7 @@ class ReceiptAdmin(admin.ModelAdmin):
     @staticmethod
     def email(obj: Receipt) -> str:
         return obj.user.email
+
 
 @admin.register(Restaurant)
 class RestaurantAdmin(admin.ModelAdmin):
