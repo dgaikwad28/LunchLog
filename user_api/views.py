@@ -25,27 +25,6 @@ class LoginView(TokenObtainPairView):
     permission_classes = (permissions.AllowAny,)
     serializer_class = serializers.LoginSerializer
 
-    def post(self, request, *args, **kwargs) -> Response:
-        """
-        Handle POST request for user login.
-        Checks if the provided username or email exists, then delegates to the parent class for token generation.
-        Returns 401 Unauthorized if credentials are incorrect.
-        """
-        username = request.data.get("username", None)
-        email = request.data.get("email", None)
-
-        try:
-            if username:
-                UserModel.objects.get(username=username)
-            elif email:
-                UserModel.objects.get(email=email)
-        except ObjectDoesNotExist:
-            msg = {"detail": "Credentials is/are not correct"}
-            logger.warning(msg)
-            return Response(msg, status=status.HTTP_401_UNAUTHORIZED)
-        else:
-            return super(LoginView, self).post(request, *args, **kwargs)
-
 
 class SignUpView(RegisterView):
     authentication_classes = ()

@@ -8,11 +8,10 @@ from dj_rest_auth.registration.serializers import RegisterSerializer
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
-from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from user_api.models import Receipt
+from user_api.models import Receipt, Address, Restaurant
 
 UserModel = get_user_model()
 
@@ -71,14 +70,46 @@ class SignUpSerializer(RegisterSerializer):
         return email
 
 
+class AddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Address
+        fields = ('__all__')
+
+
+class RestaurantSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Restaurant model, exposing primary key and name.
+    """
+    address = AddressSerializer()
+
+    class Meta:
+        model = Restaurant
+        fields = '__all__'
+
+
 class ReceiptsCreateSerializer(serializers.ModelSerializer):
     """
     Serializer for creating Receipt instances. Uses all fields from the Receipt model.
     """
 
+    restaurant = RestaurantSerializer()
+
     class Meta:
         model = Receipt
         fields = '__all__'
+
+    def create(self, validated_data):
+        """
+        Creates a Receipt instance with nested Restaurant and Address data.
+        """
+        restaurant_data = validated_data.pop('restaurant')
+        address_data = restaurant_data.pop('address')
+
+        address = Address.objects.create(**address_data)
+        restaurant = Restaurant.objects.create(address=address, **restaurant_data)
+
+        receipt = Receipt.objects.create(restaurant=restaurant, **validated_data)
+        return receipt
 
 
 class ReceiptsSerializer(ReceiptsCreateSerializer):

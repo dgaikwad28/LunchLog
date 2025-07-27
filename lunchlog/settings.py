@@ -173,9 +173,8 @@ REST_AUTH_REGISTER_SERIALIZERS = {
 # allauth configs
 ACCOUNT_SIGNUP_FIELDS = ['username', 'email*', 'password1', 'password2', 'first_name', 'last_name']
 ACCOUNT_EMAIL_VERIFICATION = "none"
-ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True
-ACCOUNT_USERNAME_REQUIRED = True
+ACCOUNT_USER_EMAIL_FIELD = 'email'
 
 # dj-rest-auth configs
 REST_AUTH = {
@@ -200,6 +199,6 @@ STORAGES = {
         "BACKEND": "storages.backends.s3.S3Storage",
     },
     "staticfiles": {
-        "BACKEND": "storages.backends.s3.S3Storage",
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
     },
 }

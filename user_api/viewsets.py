@@ -23,8 +23,6 @@ class ReceiptsViewSet(viewsets.ModelViewSet):
     authentication_classes = (JWTAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
 
-    queryset = Receipt.objects.all().prefetch_related('user')
-
     def get_query_params(self):
         """
         Returns the query parameters for filtering receipts by month and year.
@@ -48,7 +46,8 @@ class ReceiptsViewSet(viewsets.ModelViewSet):
             - month: Filter receipts by month of the date field.
             - year: Filter receipts by year of the date field.
         """
-        queryset = Receipt.objects.all().prefetch_related('user')
+        user = self.request.user
+        queryset = Receipt.objects.filter(user=user).prefetch_related('user', 'restaurant').select_related('restaurant__address')
         filters = self.get_query_params()
         if filters:
             queryset = queryset.filter(**filters)
