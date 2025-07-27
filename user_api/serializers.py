@@ -1,3 +1,4 @@
+import logging
 from typing import Dict, Any
 
 from allauth.account import app_settings as allauth_account_settings
@@ -8,10 +9,13 @@ from dj_rest_auth.registration.serializers import RegisterSerializer
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
+from django.core.files.uploadedfile import TemporaryUploadedFile
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from user_api.models import Receipt, Address, Restaurant
+
+logger = logging.getLogger("api")
 
 UserModel = get_user_model()
 
@@ -45,7 +49,7 @@ class SignUpSerializer(RegisterSerializer):
     first_name = serializers.CharField()
     last_name = serializers.CharField()
 
-    def get_cleaned_data(self):
+    def get_cleaned_data(self) -> Dict[str, str]:
         """
         Returns a dictionary of cleaned user registration data including username, password, email, first name,
         and last name.
@@ -58,7 +62,7 @@ class SignUpSerializer(RegisterSerializer):
             'last_name': self.validated_data.get('last_name', ''),
         }
 
-    def validate_email(self, email):
+    def validate_email(self, email: str) -> str:
         """
         Validates the email address for uniqueness and proper formatting.
         Raises a ValidationError if the email is already registered.
@@ -66,6 +70,7 @@ class SignUpSerializer(RegisterSerializer):
         email = get_adapter().clean_email(email)
         if allauth_account_settings.UNIQUE_EMAIL:
             if email and EmailAddress.objects.filter(email=email).exists():
+                logger.debug(f"Email already registered: {email}")
                 raise serializers.ValidationError('A user is already registered with this e-mail address.')
         return email
 
@@ -122,19 +127,21 @@ class ReceiptImageUploadSerializer(serializers.ModelSerializer):
         fields = ('image',)
         read_only_fields = ('id',)
 
-    def validate_image(self, image) -> serializers.ImageField:
-
+    def validate_image(self, image: TemporaryUploadedFile) -> TemporaryUploadedFile:
         """
         Validates the uploaded image for size constraints.
         """
         if image.size > settings.MEDIA_SIZE:
-            raise ValidationError(f'Image file too large')
+            logger.info("Image file too large")
+            raise ValidationError('Image file too large')
         return image
 
-    def update(self, instance, validated_data):
+    def update(self, instance: Receipt, validated_data: dict) -> Receipt:
         """
         Updates the Receipt instance with a new image, renames the image, and handles S3 upload errors.
         """
+        if instance.image:
+            instance.image.delete()
         if validated_data.get('image'):
             image = validated_data['image']
             image.name = f"{str(instance.user.pk)}_{instance.date}"
@@ -142,5 +149,9 @@ class ReceiptImageUploadSerializer(serializers.ModelSerializer):
             try:
                 return super().update(instance, validated_data)
             except SSLError:
+                logger.warning("Error uploading image to S3")
+                pass
+            except Exception as e:
+                logger.exception(f"Unexpected error uploading image: {e}")
                 pass
         raise ValidationError("There was an error uploading the image. Please try again.")

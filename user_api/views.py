@@ -45,5 +45,5 @@ class ReceiptImageUploadView(generics.UpdateAPIView, generics.DestroyAPIView):
         try:
             return super().update(request, *args, **kwargs)
         except Exception as e:
-            logger.error(f"Error updating receipt image: {e}")
+            logger.exception(f"Error updating receipt image: {e}")
             return Response({"detail": "Failed to update receipt image"}, status=status.HTTP_400_BAD_REQUEST)
