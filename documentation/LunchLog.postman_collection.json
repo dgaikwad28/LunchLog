@@ -1,0 +1,550 @@
+{
+	"info": {
+		"_postman_id": "99c4cf16-37b8-4e9d-8eb5-8324b10919d1",
+		"name": "LunchLog",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "9178500"
+	},
+	"item": [
+		{
+			"name": "Signup",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Retrieve the response JSON\r",
+							"const response = pm.response.json();\r",
+							"\r",
+							"// Set access and refresh tokens to environment variables\r",
+							"pm.environment.set(\"access\", response.access);\r",
+							"pm.environment.set(\"refresh\", response.refresh);\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"darsydsdsssssydslffssldskffslsssx\",\r\n    \"email\": \"dsasdsflsrd@gmail.com\",\r\n    \"password1\": \"YXNkZmdoamtsbGtqaGdmZHNh\",\r\n    \"password2\": \"YXNkZmdoamtsbGtqaGdmZHNh\", \r\n    \"first_name\": \"{{$randomFirstName}}\",\r\n    \"last_name\": \"{{$randomLastName}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:7000/auth/signup/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "7000",
+					"path": [
+						"auth",
+						"signup",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Retrieve the response JSON\r",
+							"const response = pm.response.json();\r",
+							"\r",
+							"// Set access and refresh tokens to environment variables\r",
+							"pm.environment.set(\"access\", response.access);\r",
+							"pm.environment.set(\"refresh\", response.refresh);\r",
+							"\r",
+							"// Store the pk from user object in environment variable\r",
+							"pm.environment.set(\"user_pk\", response.user.pk);\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"darsydsdsssssydslffssldskffslsssx\",\r\n    \"password\": \"YXNkZmdoamtsbGtqaGdmZHNh\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:7000/auth/login/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "7000",
+					"path": [
+						"auth",
+						"login",
+						""
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Login",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"dsasdfsrd@gmail.com\",\r\n    \"password\": \"YXNkZmdoamtsbGtqaGdmZHNh\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:7000/auth/login/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "7000",
+							"path": [
+								"auth",
+								"login",
+								""
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Sat, 26 Jul 2025 12:05:10 GMT"
+						},
+						{
+							"key": "Server",
+							"value": "WSGIServer/0.2 CPython/3.12.10"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Allow",
+							"value": "POST, OPTIONS"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Length",
+							"value": "40"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "Referrer-Policy",
+							"value": "same-origin"
+						},
+						{
+							"key": "Cross-Origin-Opener-Policy",
+							"value": "same-origin"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"username\": [\n        \"This field is required.\"\n    ]\n}"
+				}
+			]
+		},
+		{
+			"name": "receipts List",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const response = pm.response.json();\r",
+							"if (Array.isArray(response) && response.length > 0) {\r",
+							"    pm.environment.set(\"receipt_pk\", response[0].id);\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:7000/receipts/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "7000",
+					"path": [
+						"receipts",
+						""
+					],
+					"query": [
+						{
+							"key": "month",
+							"value": "7",
+							"disabled": true
+						},
+						{
+							"key": "year",
+							"value": "2025",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "receipts Create",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"price\": \"10\",\r\n    \"date\": \"2025-07-25\",\r\n    \"user\": \"{{user_pk}}\",\r\n    \"restaurant\": {\r\n        \"name\": \"Hotel Saravana Bhavan\",\r\n        \"address\": {\r\n            \"street\": \"Kaiserstraße 68\",\r\n            \"postal_code\": \"60329\",\r\n            \"region_code\": \"DE\",\r\n            \"phone_number\": \"+49 69 25626378\"\r\n        }\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:7000/receipts/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "7000",
+					"path": [
+						"receipts",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "receipts Detail",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"price\": \"10\",\r\n    \"date\": \"2025-07-25\" ,\r\n    \"user\": \"18caad97-6353-4cc3-8f6b-d3f27401fff1\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:7000/receipts/:id/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "7000",
+					"path": [
+						"receipts",
+						":id",
+						""
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{receipt_pk}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "receipts Delete",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"price\": \"10\",\r\n    \"date\": \"2025-07-25\" ,\r\n    \"user\": \"18caad97-6353-4cc3-8f6b-d3f27401fff1\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:7000/receipts/:id/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "7000",
+					"path": [
+						"receipts",
+						":id",
+						""
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{receipt_pk}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "receipts Update",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"price\": \"11\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:7000/receipts/:id/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "7000",
+					"path": [
+						"receipts",
+						":id",
+						""
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{receipt_pk}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "receipts Update",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"price\": \"11\",\r\n    \"date\": \"2025-07-25\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:7000/receipts/:id/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "7000",
+					"path": [
+						"receipts",
+						":id",
+						""
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{receipt_pk}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "receipts image Update",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "image",
+							"type": "file",
+							"src": "/C:/Users/140200062023/Downloads/20250626_140703.jpg"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://127.0.0.1:7000/receipts/image-upload/:id/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "7000",
+					"path": [
+						"receipts",
+						"image-upload",
+						":id",
+						""
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{receipt_pk}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
